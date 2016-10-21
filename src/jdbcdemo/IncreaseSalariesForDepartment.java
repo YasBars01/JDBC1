@@ -1,3 +1,7 @@
+/*
+ * Java JDBC Tutorial - Part 6.2
+ * https://www.youtube.com/watch?v=_2sJls8rnBU&list=PLEAQNNR8IlB4R7NfqBY1frapYo97L6fOQ&index=7
+ */
 package jdbcdemo;
 
 import java.sql.*;
@@ -51,8 +55,7 @@ public class IncreaseSalariesForDepartment {
 
 	}
 
-	private static void close(Connection myConn, Statement myStmt,
-			ResultSet myRs) throws SQLException {
+	private static void close(Connection myConn, Statement myStmt, ResultSet myRs) throws SQLException {
 		if (myRs != null) {
 			myRs.close();
 		}
@@ -66,9 +69,7 @@ public class IncreaseSalariesForDepartment {
 		}
 	}
 
-	private static void close(Statement myStmt, ResultSet myRs)
-			throws SQLException {
-
+	private static void close(Statement myStmt, ResultSet myRs) throws SQLException {
 		close(null, myStmt, myRs);
 	}
 

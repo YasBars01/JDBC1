@@ -7,6 +7,8 @@ public class Driver {
 
 	private static String sDB2 = "";
 	private static ResultSet myRs = null;
+	private static Connection conConn = null;
+	private static ResultSet rs = null;
 	/**
 	 * Create DB Connection using DriverManager JDBC
 	 * 
@@ -16,96 +18,54 @@ public class Driver {
 	 * @return	Returns Connection
 	 */
 	private static Connection setConnection(String db, String root, String password){
-		Connection myConn = null;
 		
 		try {
-			// Get a connection to DB
-			myConn = DriverManager.getConnection(db, root, password);
+			conConn = DriverManager.getConnection(db, root, password); 			// Get a connection to DB
 			
 		} catch ( Exception exc ){
 			System.out.println("DB Connection is broke!");
 			exc.printStackTrace();
 		}
 		
-		return myConn;
+		return conConn;
 		
 	}
 	
-	/**
-	 * Sends SQL Statement and returns resultSet 
-	 * 
-	 * @param conMyConn	Connection from setConnection() return
-	 * @param sQuery	String	SQL Query
-	 * @return	ResultSet array? of results based from SQL Query
-	 */
-	private static ResultSet setResult(Connection conMyConn, String sQuery){
-		try {
-			// Create a Statement
-			Statement myStmt = conMyConn.createStatement();
+	private static ResultSet getQuery(Connection conConn, String stringQuery, String stringQueryType){
+		ResultSet rs 	 = null;
+		Statement myStmt = null;
+		
+		//return myConn;
+		if ( stringQueryType == "search" ){						// SEARCH
+			//Driver.querySearch(conConn, stringQuery);
 			
-			// Execute a SQL query
-			myRs = myStmt.executeQuery(sQuery);
+		} else if ( stringQueryType == "insert" ){				// INSERT
+			Driver.queryInsert(conConn, stringQuery);
+			
+		} else if ( stringQueryType == "update" ){				// UPDATE
+			Driver.queryUpdate(conConn, stringQuery);
+			
+		} else if ( stringQueryType == "delete" ){				// DELETE
+			Driver.queryDelete(conConn, stringQuery);
+		
+		} else{}
+		
+		
+		try {
+			myStmt = conConn.createStatement();
+			rs = myStmt.executeQuery(stringQuery);
 			
 		} catch ( Exception exc ){
 			System.out.println("setStatement SQL is broke!");
 			exc.printStackTrace();
 		}
 		
-		return myRs;
-		
+		return rs;
 	}
 	
-	/**
-	 * Prints Results based on the SQL Query provided on setResult()
-	 * 
-	 * @param rs	ResultSet from setStatement
-	 * @throws SQLException
-	 */
-	private static void getResultsLastFristName(ResultSet rs) throws SQLException{
-		System.out.println();
-		while ( rs.next() ){
-			System.out.println(rs.getString("last_name") + " " + rs.getString("first_name"));
-		}
-		System.out.println();
-	}
-	
-	private static void getResultsIDLastFirstName(ResultSet rs) throws SQLException{
-		System.out.println();
-		while ( rs.next() ){
-			System.out.println(rs.getInt("id") + "\t| " 
-						+ rs.getString("last_name") + " " 
-						+ rs.getString("first_name"));
-		}
-		System.out.println();
-	}
-
-	private static void getResultsIDLnFnEm(ResultSet rs) throws SQLException{
-		System.out.println();
-		while ( rs.next() ){
-			System.out.println(rs.getInt("id") + "\t| " 
-						+ rs.getString("last_name") + " " 
-						+ rs.getString("first_name")+ "\t\t| " 
-						+ rs.getString("email"));
-		}
-		System.out.println();
-	}
-
-	private static void getDisplay(ResultSet rs) throws SQLException{
-		System.out.println();
-		while ( rs.next() ){
-			System.out.println(rs.getString("last_name") + " " 
-						+ rs.getString("first_name") + "\t\t| " 
-						+ rs.getBigDecimal("salary") + "\t| "
-						+ rs.getString("department"));
-		}
-		System.out.println();
-	}
-
-	private static void insertEntry(Connection conMyConn, String sQuery){
+	private static void queryInsert(Connection conMyConn, String sQuery){
 		try {
-			// Create a Statement
 			Statement myStmt = conMyConn.createStatement();
-			// Execute a SQL query
 			myStmt.executeUpdate(sQuery);
 			System.out.println("Insert complete");
 			
@@ -116,11 +76,9 @@ public class Driver {
 		
 	}
 
-	private static void updateEntry(Connection conMyConn, String sQuery){
+	private static void queryUpdate(Connection conMyConn, String sQuery){
 		try {
-			// Create a Statement
 			Statement myStmt = conMyConn.createStatement();
-			// Execute a SQL query
 			myStmt.executeUpdate(sQuery);
 			System.out.println("Update \"" + sQuery
 						 	+	"\" Complete");
@@ -130,10 +88,9 @@ public class Driver {
 			exc.printStackTrace();
 		}
 		
-	
 	}
 
-	private static void deleteEntry(Connection conMyConn, String sQuery){
+	private static void queryDelete(Connection conMyConn, String sQuery){
 		try {
 			// Create a Statement
 			Statement myStmt = conMyConn.createStatement();
@@ -204,6 +161,75 @@ public class Driver {
 		return myRs;
 	}
 	
+	/********************************* Display Results ***/
+	/**
+	 * Sends SQL Statement and returns resultSet 
+	 * 
+	 * @param conMyConn	Connection from setConnection() return
+	 * @param sQuery	String	SQL Query
+	 * @return	ResultSet array? of results based from SQL Query
+	 */
+	private static ResultSet setResult(Connection conMyConn, String sQuery){
+		try {
+			Statement myStmt = conMyConn.createStatement();
+			myRs = myStmt.executeQuery(sQuery);
+			
+		} catch ( Exception exc ){
+			System.out.println("setStatement SQL is broke!");
+			exc.printStackTrace();
+		}
+		
+		return myRs;
+		
+	}
+	
+	/**
+	 * Prints Results based on the SQL Query provided on setResult()
+	 * 
+	 * @param rs	ResultSet from setStatement
+	 * @throws SQLException
+	 */
+	private static void getResultsLastFristName(ResultSet rs) throws SQLException{
+		System.out.println();
+		while ( rs.next() ){
+			System.out.println(rs.getString("last_name") + " " + rs.getString("first_name"));
+		}
+		System.out.println();
+	}
+	
+	private static void getResultsIDLastFirstName(ResultSet rs) throws SQLException{
+		System.out.println();
+		while ( rs.next() ){
+			System.out.println(rs.getInt("id") + "\t| " 
+						+ rs.getString("last_name") + " " 
+						+ rs.getString("first_name"));
+		}
+		System.out.println();
+	}
+
+	private static void getResultsIDLnFnEm(ResultSet rs) throws SQLException{
+		System.out.println();
+		while ( rs.next() ){
+			System.out.println(rs.getInt("id") + "\t| " 
+						+ rs.getString("last_name") + " " 
+						+ rs.getString("first_name")+ "\t\t| " 
+						+ rs.getString("email"));
+		}
+		System.out.println();
+	}
+
+	private static void getDisplay(ResultSet rs) throws SQLException{
+		System.out.println();
+		while ( rs.next() ){
+			System.out.println(rs.getString("last_name") + " " 
+						+ rs.getString("first_name") + "\t\t| " 
+						+ rs.getBigDecimal("salary") + "\t| "
+						+ rs.getString("department"));
+		}
+		System.out.println();
+	}
+	/********************************* End Display Results ***/
+	
 	public static void main(String[] args) throws SQLException {
 
 		String sDB = "jdbc:mysql://localhost:3306/demo"; 
@@ -230,10 +256,12 @@ public class Driver {
 		// Create DB Connection
 		Connection conCon = Driver.setConnection(sDB, sUser, sPass);
 		
-		// Pass SQL Statement
-		ResultSet rsResult = Driver.setResult(conCon, sQuery);
-		// Print the Result Set
-		Driver.getResultsLastFristName(rsResult);		
+		ResultSet rsResult = Driver.setResult(conCon, sQuery);	// pass query
+		Driver.getResultsLastFristName(rsResult);					// print result	
+		
+		rsResult = Driver.getQuery(conCon, sQuery, "search");	// pass query
+		Driver.getResultsLastFristName(rsResult);					// print result	
+		
 		
 		rsResult = Driver.setResult(conCon, sQuery);
 		Driver.getResultsIDLnFnEm(rsResult);
