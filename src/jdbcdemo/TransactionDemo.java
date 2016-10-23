@@ -30,7 +30,9 @@ public class TransactionDemo {
 		try {
 			// Prepare Statement
 			myStmt = conConn
-					.prepareStatement("SELECT * FROM employees WHERE department=?");
+					.prepareStatement("SELECT * FROM employees WHERE department=?;", 
+							  ResultSet.TYPE_SCROLL_INSENSITIVE, 
+							  ResultSet.CONCUR_READ_ONLY);
 			
 			myStmt.setString(1, theDepartment);
 			
@@ -47,12 +49,19 @@ public class TransactionDemo {
 				System.out.printf("%s, %s, %s, %.2f\n", 
 							lastName, firstName, department, salary);
 			}
-			
+			rs.last();
+			int count = rs.getRow();
+			//rs.beforeFirst();
+
+			System.out.println( "--- Found " + count + " row(s) ---");
 		} catch ( Exception e ){
 			e.printStackTrace();
+			
 		} finally {
 			close(myStmt, rs);
 		}
+		// extra space after Print of 1 Department
+		System.out.println();
 	}
 	
 	private static void close ( Connection myConn, Statement myStmt, 
@@ -98,7 +107,7 @@ public class TransactionDemo {
 			
 			// Transaction Step 1: Delete all HR employees
 			myStmt = conConn.createStatement();
-			myStmt.executeUpdate("DELETE FROM employees WHERE department='HR'");
+			myStmt.executeUpdate("DELETE FROM employees WHERE department='HR';");
 			
 			
 			// Transaction Step 2: Set salaries to 300000 for all Engineering Employees
@@ -135,3 +144,12 @@ public class TransactionDemo {
 	}
 
 }
+
+/*
+ * NOTE:
+ * When getting "Lock wait timeout exceeded; try restarting transaction" On Update or Delete, run 
+ * "SHOW ENGINE INNODB STATUS"
+ * 
+ */
+
+
