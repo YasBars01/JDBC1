@@ -4,9 +4,13 @@ import java.sql.*;
 
 public class SchemaInfo {
 
-	public static void close ( Connection myConn ) throws SQLException {
+	public static void close ( Connection myConn, ResultSet myRs ) throws SQLException {
 		if ( myConn != null ){
 			myConn.close();
+		}
+		
+		if ( myRs != null ){
+			myRs.close();
 		}
 	}
 	
@@ -49,7 +53,7 @@ public class SchemaInfo {
 		} catch ( Exception e ){
 			e.printStackTrace();
 		} finally {
-			close(conConn);
+			close(conConn, rs);
 		}
 		
 	}

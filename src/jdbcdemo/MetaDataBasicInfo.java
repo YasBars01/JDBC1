@@ -1,3 +1,8 @@
+/*
+ * Java JDBC Tutorial – Part 9: JDBC ResultSet MetaData with MySQL
+ * https://www.youtube.com/watch?v=JyMkANs3vhI&list=PLEAQNNR8IlB4R7NfqBY1frapYo97L6fOQ&index=13
+ * 
+ */
 package jdbcdemo;
 
 import java.sql.*;
@@ -29,7 +34,7 @@ public class MetaDataBasicInfo {
 			System.out.println("Product version: " + dbMetaData.getDatabaseProductVersion());
 			System.out.println();
 			
-			// Display info about JDBC Drver
+			// Display info about JDBC Driver
 			System.out.println("JDBC Driver name: " + dbMetaData.getDriverName());
 			System.out.println("JDBC Driver version: " + dbMetaData.getDriverVersion());
 			

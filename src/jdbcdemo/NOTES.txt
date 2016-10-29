@@ -1,0 +1,85 @@
+package jdbcdemo;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class BlobHandler {
+	
+	/* To Do
+	 * Improve by adding another constructor to sort file type, on DB add another field for file type
+	 *  or create a method to check file type 
+	 *  
+	 *  Add field for file name
+	 *  
+	 */
+	public static String ImportBlobPDF( String FileLocation ) throws IOException, SQLException{
+		Connection myConn = null;
+		PreparedStatement myStmt = null;
+		FileInputStream input = null;
+		String status = "";
+		
+		try {
+			// 1. Get a connection to database
+			myConn = DriverManager.getConnection(
+					"jdbc:mysql://localhost:3306/demo", "yas", "password");
+
+			// 2. Prepare statement
+			//String sql = "update employees set resume=? where email='john.doe@foo.com'";
+			String sql = "update employees set resume=? where email='barrientos.yas@gmail.com'";
+			myStmt = myConn.prepareStatement(sql);
+			
+			// 3. Set parameter for resume file name
+			File theFile = new File("yb.pdf");
+			input = new FileInputStream(theFile);
+			myStmt.setBinaryStream(1, input);
+			
+			System.out.println("Reading input file: " + theFile.getAbsolutePath());
+			
+			// 4. Execute statement
+			System.out.println("\nStoring resume in database: " + theFile);
+			System.out.println(sql);
+			
+			myStmt.executeUpdate();
+			
+			status = "\nCompleted successfully!";
+			
+		} catch (Exception exc) {
+			exc.printStackTrace();
+		} finally {			
+			if (input != null) {
+				input.close();
+			}
+			
+			close(myConn, myStmt);			
+		}
+		
+		return status;
+		
+	}
+	
+private static void close(Connection myConn, Statement myStmt)
+		throws SQLException {
+
+	if (myStmt != null) {
+		myStmt.close();
+	}
+	
+	if (myConn != null) {
+		myConn.close();
+	}
+}
+
+	public static void main(String[] args) throws IOException, SQLException {
+		
+		String out = BlobHandler.ImportBlobPDF("C:/Users/IBM_ADMIN/workspace/JDBC2/yb.pdf");
+		System.out.println(out);
+		
+	}
+
+}
